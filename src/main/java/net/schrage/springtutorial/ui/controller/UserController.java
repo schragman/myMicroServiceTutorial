@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.awt.*;
 
 @RestController
@@ -39,7 +40,7 @@ public class UserController {
       produces = {
           MediaType.APPLICATION_XML_VALUE,
           MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<UserRest> createUser(@RequestBody UserDetailsRequestModel userDetails) {
+  public ResponseEntity<UserRest> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails) {
     UserRest returnValue = new UserRest();
     returnValue.setFirstName(userDetails.getFirstName());
     returnValue.setLastName(userDetails.getLastName());
