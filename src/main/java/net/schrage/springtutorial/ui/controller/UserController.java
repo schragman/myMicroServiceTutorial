@@ -1,5 +1,6 @@
 package net.schrage.springtutorial.ui.controller;
 
+import net.schrage.springtutorial.exceptions.UserServiceException;
 import net.schrage.springtutorial.ui.model.request.UserDetailsRequestModel;
 import net.schrage.springtutorial.ui.model.request.UserDetailsUpdateModel;
 import net.schrage.springtutorial.ui.model.response.UserRest;
@@ -26,6 +27,12 @@ public class UserController {
           MediaType.APPLICATION_JSON_VALUE
       })
   public ResponseEntity<UserRest> getUser(@PathVariable String userId) {
+
+    if (true) {
+      throw new UserServiceException("A user service exception is thrown");
+    }
+
+
     if (users.containsKey(userId)) {
       return new ResponseEntity<UserRest>(users.get(userId), HttpStatus.OK);
     } else {
