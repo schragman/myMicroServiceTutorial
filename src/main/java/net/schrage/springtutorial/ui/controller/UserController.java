@@ -4,6 +4,8 @@ import net.schrage.springtutorial.exceptions.UserServiceException;
 import net.schrage.springtutorial.ui.model.request.UserDetailsRequestModel;
 import net.schrage.springtutorial.ui.model.request.UserDetailsUpdateModel;
 import net.schrage.springtutorial.ui.model.response.UserRest;
+import net.schrage.springtutorial.userservice.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,8 @@ import java.util.UUID;
 @RequestMapping("users")  //http://localhost:8080/users
 public class UserController {
 
-  Map<String, UserRest> users;
+  @Autowired
+  UserService userService;
 
   @GetMapping(path = "/{userId}",
       produces = {
@@ -28,13 +31,13 @@ public class UserController {
       })
   public ResponseEntity<UserRest> getUser(@PathVariable String userId) {
 
-    if (true) {
+    /*if (true) {
       throw new UserServiceException("A user service exception is thrown");
-    }
+    }*/
 
 
-    if (users.containsKey(userId)) {
-      return new ResponseEntity<UserRest>(users.get(userId), HttpStatus.OK);
+    if (userService.getUsers().containsKey(userId)) {
+      return new ResponseEntity<UserRest>(userService.getUsers().get(userId), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -54,18 +57,8 @@ public class UserController {
           MediaType.APPLICATION_XML_VALUE,
           MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<UserRest> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails) {
-    UserRest returnValue = new UserRest();
-    returnValue.setFirstName(userDetails.getFirstName());
-    returnValue.setLastName(userDetails.getLastName());
-    returnValue.setEmail(userDetails.getEmail());
 
-    String userId = UUID.randomUUID().toString();
-    returnValue.setUserId(userId);
-
-    if (users == null) {
-      users = new HashMap<>();
-    }
-    users.put(userId, returnValue);
+    UserRest returnValue = userService.createUser(userDetails);
 
     return new ResponseEntity<UserRest>(returnValue, HttpStatus.ACCEPTED);
   }
@@ -78,7 +71,7 @@ public class UserController {
           MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<UserRest> updateUser(
       @PathVariable String userId, @Valid @RequestBody UserDetailsUpdateModel userDetails) {
-    UserRest storedUser = users.get(userId);
+    UserRest storedUser = userService.getUsers().get(userId);
     storedUser.setFirstName(userDetails.getFirstName());
     storedUser.setLastName(userDetails.getLastName());
 
@@ -88,7 +81,7 @@ public class UserController {
   @DeleteMapping(path = "/{userId}")
   public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
 
-    users.remove(userId);
+    userService.getUsers().remove(userId);
     return ResponseEntity.noContent().build();
   }
 
